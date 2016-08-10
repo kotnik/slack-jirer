@@ -1,13 +1,10 @@
-from jira import JIRA
 from slackbot.bot import listen_to
 from slackbot import settings
 
 
 @listen_to('(.*\-\d+)')
 def response_issue(message, issue_id=None):
-    project, issue_no = issue_id.split('-')
-    if project.lower() not in ['pf', 'pe']:
-        return
+    project = issue_id.split('-')[0]
 
     if project.upper() not in settings.ALLOWED_PROJECTS:
         return
