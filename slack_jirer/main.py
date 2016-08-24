@@ -15,7 +15,6 @@ def main():
     try:
         settings.jira_class = JiraWrapper(
             settings.JIRA_SERVER,
-            settings.JIRA_PROJECTS,
             settings.JIRA_USERNAME,
             settings.JIRA_PASSWORD,
             )
