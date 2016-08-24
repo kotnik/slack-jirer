@@ -9,6 +9,8 @@ def response_issue(message, issue_id=None):
     print("Handling %s" % issue_id)
 
     project = issue_id.split('-')[0]
+    if "/" in project:
+        project = project.split("/")[-1]
     if project.upper() not in settings.ALLOWED_PROJECTS:
         print("Unknown project %s" % project)
         return
