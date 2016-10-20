@@ -2,6 +2,8 @@ from __future__ import print_function
 
 import sys
 
+from expiringdict import ExpiringDict
+
 from slackbot import settings
 settings.PLUGINS = [
     'slack_jirer.bot',
@@ -23,6 +25,10 @@ def main():
     except AttributeError:
         print('Missing JIRA_SERVER, JIRA_PROJECTS, JIRA_USERNAME or JIRA_PASSWORD environment variable')
         sys.exit(1)
+
+    # Jira allows a limited number of queries, but jira module we are using is
+    # not giving us that info. So we cache.
+    settings.CACHE = ExpiringDict(max_len=500, max_age_seconds=30)
 
     print("starting bot...")
     bot = Bot()

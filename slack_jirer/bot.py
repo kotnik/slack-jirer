@@ -17,10 +17,16 @@ def response_issue(message, issue_id=None):
         print("Unknown project %s" % project)
         return
 
-    issue = settings.jira_class.get_ticket(issue_id)
-    if not issue:
-        print("Issue %s not found" % issue_id)
-        return
+    try:
+        issue = settings.CACHE[issue_id]
+        print("Used cached version of %s" % issue_id)
+    except KeyError:
+        issue = settings.jira_class.get_ticket(issue_id)
+        if not issue:
+            print("Issue %s not found, Jira says" % issue_id)
+            return
+        settings.CACHE[issue_id] = issue
+        print("Fetched %s from Jira" % issue_id)
 
     msg = "<%s/browse/%s|%s: %s>\n" % (
         settings.JIRA_SERVER,
