@@ -1,22 +1,29 @@
 from __future__ import print_function
 
+import re
+
 from slackbot.bot import listen_to
 from slackbot import settings
 
 
 @listen_to('(\S+\-\d+)')
-def response_issue(message, issue_id=None):
-    print("Handling %s" % issue_id)
+def response_issue(message, issue_string=None):
+    print("Handling %s" % issue_string)
 
-    project = issue_id.split('-')[0]
-    print("Detected project: %s" % project)
+    project = issue_string.split('-')[0]
+    issue_id = issue_string.split('-')[1]
     if "/" in project:
         project = project.split("/")[-1]
-        issue_id = project + "-" + issue_id.split('-')[-1]
+    try:
+        issue_id = project + "-" + re.search(r'\d+', issue_id).group()
+    except AttributeError:
+        print("Unknown issue in %s" % issue_id)
+        return
+    print("Detected project: %s" % project)
     if project.upper() not in settings.ALLOWED_PROJECTS:
         print("Unknown project %s" % project)
         return
-
+    print("Searching for: %s" % issue_id)
     try:
         issue = settings.CACHE[issue_id]
         print("Used cached version of %s" % issue_id)
